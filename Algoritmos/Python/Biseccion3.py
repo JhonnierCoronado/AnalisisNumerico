@@ -1,3 +1,7 @@
+#El programa no está funcionando. Aún se trabaja en el.
+
+
+
 import math
 import numpy
 

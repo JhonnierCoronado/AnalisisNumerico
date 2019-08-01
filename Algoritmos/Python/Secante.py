@@ -35,6 +35,11 @@ def secante(x1, x2, error):
     
     return x3
 
-x1 = 0
+x1 = 1
 x2 = 3
-secante(x1, x2, 10e-9)
+if (x1 < 1):
+    print("Error. Division por 0")
+if (x1 > x2):
+    print("Error, rangos invertidos")
+else:    
+    print(secante(x1, x2, 10e-9))
