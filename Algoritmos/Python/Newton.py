@@ -1,9 +1,10 @@
 import math
 
-
+#Una funcion predefinida
 def f(x):
     return (x - 1.35) ** 3
 
+#La derivada "quemada" de la función definida anteriormente
 def derivada(x):
     return 3 * (x - 1.35) ** 2
 
