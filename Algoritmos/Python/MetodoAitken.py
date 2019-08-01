@@ -24,4 +24,4 @@ x1 = 1
 error = 10e-8
 (it, raiz) =  aitken(x1, error)
 
-print("Con ", it, " iteraciones, se tiene una raiz de ", raiz)
+print("Con ", it, " iteraciones, se tiene una raiz de (con 5 cifras)",'%.4f'%raiz)
