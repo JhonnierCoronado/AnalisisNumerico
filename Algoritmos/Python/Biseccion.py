@@ -37,6 +37,8 @@ def tabula(a, b, intervalos):
   for i in range (0, int(puntos)):
     print("\t", a, "\t\t", f(a), "\n")
     a += ancho
+
+    
 def f(a):
   return math.exp(a) - math.pi*a
 main()

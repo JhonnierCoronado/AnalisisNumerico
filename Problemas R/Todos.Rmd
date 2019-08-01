@@ -1,0 +1,153 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Biseccion 
+e^x - pi*x
+```{r}
+rm(list=ls())
+Fx = function(x){
+  return ((exp(x)) - (pi*x))
+}
+
+biseccion = function(a, b, error){
+  #Para graficar se crea una secuencia de números entre el rango [a,b]
+  x = seq(a, b, 0.1)
+  plot(x, Fx(x), type = "l", col = "red")
+  abline(h = 0, v = 0, col = "blue")
+  xr = 0
+  fxr = 0
+  contador = 0
+  if (Fx(a) * Fx(b) > 0){
+    cat("No se puede aplicar el método")
+  }
+  else {
+    xr = (a + b) / 2.0
+    fxr = Fx(xr)
+    if (fxr <= error){
+      break
+    } else {
+      if (fxr * Fx(a) > 0)
+        a = xr
+      if (fxr * Fx(b) > 0)
+        b = xr
+    }
+    contador = contador + 1
+  }
+  cat("Iteracciones: ", contador, "Resultado: ", xr, "\n")
+}
+
+biseccion(0, 1, 10e-8)
+```
+
+
+Método de Newton
+e^x - pi * x
+Derivada
+
+
+
+```{r}
+rm(list=ls())
+Fx = function(x) exp(x) - pi * x
+Fx1 = function(x) exp(x) - pi
+
+Newton = function(a, b, error){
+  x = seq(a, b, 0.1)
+  plot(x, Fx(x), type = "l", col = "red")
+  abline(h = 0, v = 0, col = "blue")
+  
+  x_0 = (a + b) / 2
+  
+  contador = 0
+  dx = 0
+  repeat {
+    corr = Fx(x_0) / Fx1(x_0)
+    x_1 = x_0 - corr
+    dx = abs(corr)
+    x_0 = x_1
+    contador = contador + 1
+    
+    cat(contador, dx, "\n")
+    if (dx <= error)
+      break
+  }
+  cat ("Iteracciones: ", contador, "Resultado: ", x_1, "\n")
+}
+Newton(-1, 1, 10e-8)
+```
+
+Método del Punto Fijo
+
+```{r}
+rm(list=ls())
+Fx = function(x) exp(x) / pi
+Fx1 = function(x) log(x*pi)
+
+PuntoFijo = function(a, b, error){
+  xInicial = a
+  x = seq(a, b, 0.1)
+  plot(x, Fx(x), type = "l", col = "orange")
+  plot(x, Fx1(x), type = "l", col = "blue")
+  abline(h = 0, v = 0, col = "red")
+  if (Fx(a) < a || Fx(b) < b)
+    cat("El intervalo no es valido\n")
+  else {
+    x_0 = (a + b) / 2
+    contador = 0
+    fxInicial = Fx(a)
+    done = FALSE
+    
+    while(abs(xInicial - fxInicial) > error){
+      contador = contador + 1
+      
+      if (xInicial < a){
+        done = TRUE
+      }
+      if (done == FALSE){
+        xInicial = fxInicial
+        fxInicial = Fx(xInicial)
+      } else {
+        fxInicial = xInicial
+        xInicial = Fx1(fxInicial)
+      }
+    }
+   cat("Iteracciones: ", contador, "Resultado: ", xInicial, "\n") 
+  }
+}
+
+PuntoFijo(0, 1, 10e-8)
+```
+
+Método de la secante
+
+```{r}
+rm(list=ls())
+Fx = function(x) exp(x) - pi * x
+Fx1 = function(x) exp(x) - pi
+
+Secante = function(x1, x2, error){
+  x = (Fx(x2) * x1 - Fx(x1) * x2) / (Fx(x2) - Fx(x1))
+  err = 1
+  contador = 0
+  while (err > error){
+    contador = contador + 1
+    x1 = x2
+    x2 = x
+    x = (Fx(x2) * x1 - Fx(x1) * x2) / (Fx(x2) - Fx(x1))
+    if (Fx(x) == 0)
+      break
+    err = abs(Fx(x) / Fx1(x))
+    cat("Valor X: ", x, "\t\tValor del Error: ", err, "\t\tIteraccion: ", contador, "\n")
+  }
+}
+
+Secante(0, 1, 10e-8)
+```
+
+Teorema de Aitken
+
+```{r}
+```
+

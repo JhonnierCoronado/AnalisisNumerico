@@ -23,7 +23,7 @@ def puntoFijo(a, b, x, error):
             gxi = xi
             xi = invg(gxi)
         cont += 1
-    return (xi, it)
+    return (xi, cont)
 
 def main():
     a = 0
