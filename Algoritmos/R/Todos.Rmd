@@ -45,6 +45,7 @@ biseccion(0, 1, 10e-8)
 Método de Newton
 e^x - pi * x
 Derivada
+e^x - pi
 
 
 
@@ -86,6 +87,7 @@ Fx = function(x) exp(x) / pi
 Fx1 = function(x) log(x*pi)
 
 PuntoFijo = function(a, b, error){
+  errorX = 0
   xInicial = a
   x = seq(a, b, 0.1)
   plot(x, Fx(x), type = "l", col = "orange")
@@ -98,10 +100,12 @@ PuntoFijo = function(a, b, error){
     contador = 0
     fxInicial = Fx(a)
     done = FALSE
-    
+    valoresX = c()
+    erroresX = c()
+    x = 0
     while(abs(xInicial - fxInicial) > error){
+      x = x + 1
       contador = contador + 1
-      
       if (xInicial < a){
         done = TRUE
       }
@@ -112,12 +116,21 @@ PuntoFijo = function(a, b, error){
         fxInicial = xInicial
         xInicial = Fx1(fxInicial)
       }
+      cat("Iteraccion: ", contador, "\tValor de X: ", xInicial, "\t\tError: ", errorX, "\n")
+      errorX = xInicial - errorX
+      valoresX[x] = xInicial
+      erroresX[x] = errorX
+      
     }
+    plot(valoresX, erroresX, xlab="Ei", ylab="Ei+1", main="Valores * Errores", pch=10, col="blue")
+    myline.fit = lm (erroresX ~ valoresX)
+    summary(myline.fit)
+    abline(myline.fit)
    cat("Iteracciones: ", contador, "Resultado: ", xInicial, "\n") 
   }
 }
 
-PuntoFijo(0, 1, 10e-8)
+PuntoFijo(0, 3, 10e-8)
 ```
 
 Método de la secante
@@ -146,10 +159,7 @@ Secante = function(x1, x2, error){
 Secante(0, 1, 10e-8)
 ```
 
-Teorema de Aitken
 
-```{r}
-```
 Método de Aitken
 
 ```{r}
