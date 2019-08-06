@@ -38,7 +38,7 @@ biseccion = function(a, b, error){
   cat("Iteracciones: ", contador, "Resultado: ", xr, "\n")
 }
 
-biseccion(0, 1, 10e-8)
+biseccion(0, 2, 10e-8)
 ```
 
 
@@ -123,13 +123,12 @@ PuntoFijo = function(a, b, error){
       valoresX[x] = xInicial
       erroresX[x] = errorX
       it[x] = contador
-      
+      cat("Longitud: ", length(erroresX), "\n")
     }
     plot(valoresX, erroresX, type="l",xlab="Ei", ylab="Ei+1", main="Valores * Errores", col="red")
     
    cat("Iteracciones: ", contador, "Resultado: ", xInicial, "\n")
    
-   plot(erroresX, it, type="l", xlab="Errores", ylab="Iteracciones",  main="Iteracciones * Errores", col = "red")
   }
 }
 
