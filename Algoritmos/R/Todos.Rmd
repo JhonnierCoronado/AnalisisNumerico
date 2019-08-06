@@ -122,7 +122,7 @@ PuntoFijo = function(a, b, error){
       erroresX[x] = errorX
       
     }
-    plot(valoresX, erroresX, xlab="Ei", ylab="Ei+1", main="Valores * Errores", pch=10, col="blue")
+    plot(valoresX, erroresX, xlab="Ei", ylab="Ei+1", main="Valores * Errores", pch=10, col="red")
     myline.fit = lm (erroresX ~ valoresX)
     summary(myline.fit)
     abline(myline.fit)
