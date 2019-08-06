@@ -122,8 +122,9 @@ PuntoFijo = function(a, b, error){
       errorX = xInicial - errorX
       
       valoresX[x] = xInicial
+      i = 0
       if (x%%2 == 0){
-        erroresX1[x] = errorX        
+        erroresX1[x] = errorX
       } else{
         erroresX[x] = errorX
       }
