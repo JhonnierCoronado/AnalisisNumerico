@@ -1,10 +1,10 @@
 import math
 
-def taylor():
+def taylor(x):
     a = 0
-    r = f(a)
-    for i in range (0, 10):
-        r += (f(a) / math.factorial(i))*((0.05-a)**i)
+    r = 0
+    for i in range (0, 15):
+        r += (x**i / math.factorial(i))
 
     print ('%.5g' % r);    
 
@@ -12,4 +12,4 @@ def taylor():
 def f(a):
     return math.exp(a)
 
-taylor()
+taylor(0.5)
