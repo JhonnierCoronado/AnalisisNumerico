@@ -9,6 +9,7 @@ calculo = function(v, Ev, t, Et){
   errorAbs = resultado - v * t
   errorRel = errorAbs / resultado
   
+  cat("Valor maximo: ", errorMaximo, "\nValor minimo: ", errorMinimo, "\n")
   cat("El valor es: ", resultado, "\n")
   cat("El error es: ", error, "\nError relativo: ", errorRel, "\nError absoluto: ", errorAbs)
 }
