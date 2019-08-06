@@ -102,6 +102,7 @@ PuntoFijo = function(a, b, error){
     done = FALSE
     valoresX = c()
     erroresX = c()
+    it = c()
     x = 0
     while(abs(xInicial - fxInicial) > error){
       x = x + 1
@@ -118,15 +119,17 @@ PuntoFijo = function(a, b, error){
       }
       cat("Iteraccion: ", contador, "\tValor de X: ", xInicial, "\t\tError: ", errorX, "\n")
       errorX = xInicial - errorX
+      
       valoresX[x] = xInicial
       erroresX[x] = errorX
+      it[x] = contador
       
     }
-    plot(valoresX, erroresX, xlab="Ei", ylab="Ei+1", main="Valores * Errores", pch=10, col="red")
-    myline.fit = lm (erroresX ~ valoresX)
-    summary(myline.fit)
-    abline(myline.fit)
-   cat("Iteracciones: ", contador, "Resultado: ", xInicial, "\n") 
+    plot(valoresX, erroresX, type="l",xlab="Ei", ylab="Ei+1", main="Valores * Errores", col="red")
+    
+   cat("Iteracciones: ", contador, "Resultado: ", xInicial, "\n")
+   
+   plot(erroresX, it, type="l", xlab="Errores", ylab="Iteracciones",  main="Iteracciones * Errores", col = "red")
   }
 }
 
