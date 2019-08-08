@@ -4,41 +4,47 @@ output: html_notebook
 ---
 
 Biseccion 
-e^x - pi*x
+
 ```{r}
 rm(list=ls())
-Fx = function(x){
-  return ((exp(x)) - (pi*x))
-}
+Fx = function(x) (exp(-x) + x -2)
+
+valoresError = c()
+valoresX = c()
 
 biseccion = function(a, b, error){
   #Para graficar se crea una secuencia de números entre el rango [a,b]
   x = seq(a, b, 0.1)
   plot(x, Fx(x), type = "l", col = "red")
-  abline(h = 0, v = 0, col = "blue")
-  xr = 0
-  fxr = 0
+  abline(h = 0, col = "blue")
+  x = b
+  d = (a+b) / 2.0
   contador = 0
-  if (Fx(a) * Fx(b) > 0){
-    cat("No se puede aplicar el método")
-  }
-  else {
-    xr = (a + b) / 2.0
-    fxr = Fx(xr)
-    if (fxr <= error){
-      break
-    } else {
-      if (fxr * Fx(a) > 0)
-        a = xr
-      if (fxr * Fx(b) > 0)
-        b = xr
-    }
+  e = abs(a-b) /2.0
+  while (e > error){
     contador = contador + 1
+    if (Fx(a) * Fx(b) > 0){
+      cat("No se puede aplicar el método\n")
+    }
+    else {
+        if (Fx(x) * Fx(a) > 0)
+          a = x
+        if (Fx(x) * Fx(b) > 0)
+          b = x
+        d = x
+        x = (a + b) / 2
+        e = abs(a-b) / 2.0
+        
+        valoresX[contador] = x
+        valoresError[contador] = e
+        cat("X: ", x, "\tError: ", e, "\n")
+    }
   }
-  cat("Iteracciones: ", contador, "Resultado: ", xr, "\n")
+  plot(valoresError, valoresX, type = "l")
+  cat("Iteracciones: ", contador, "Resultado: ", x, "\n")
 }
 
-biseccion(0, 2, 10e-8)
+biseccion(-3, 0, 10e-5)
 ```
 
 
@@ -140,6 +146,46 @@ PuntoFijo = function(a, b, error){
 
 PuntoFijo(0, 3, 10e-8)
 ```
+Método de la Posición falsa
+```{r}
+  Fx = function(x) exp(-x) + x -2
+  Fx1 = function(x) 1 - exp(x)
+  
+  Pfalsa = function(a, b, error){
+    e = 1
+    x = seq(a, b, 0.1)
+    plot(x, Fx(x), type = "l", col="blue")
+    abline(h=0, col = "blue")
+    valoresX = c()
+    valoresError = c()
+    it = 0
+    while (e > error) {
+      it = it + 1
+      x = (Fx(b) * a - Fx(a) * b) / (Fx(b) - Fx(a))
+      if (Fx(x) == 0) {
+        break
+      }
+      if (Fx(x) * Fx(a) < 0){
+        b = x
+      }
+      else {
+        a = x
+      }
+      e = abs(Fx(x) / Fx1(x))
+      points(rbind(c(x,0)),pch=19,cex=0.7,col="red")
+      cat("Valor de X: ", x, "\tError: ", e, "\n")
+      valoresX[it] = x
+      valoresError[it] = e
+    }
+    plot(valoresX, valoresError, type = "l")
+  }
+  Pfalsa(0, 3, 10e-8)
+```
+
+
+
+
+
 
 Método de la secante
 
@@ -253,7 +299,16 @@ aitken("2.7182^x-3.1415*x", 1, 0, 10^-8)
 
 Metodo de Graficar Polares
 ```{r}
+
 rm(list=ls())
+
+dimension = seq(-pi, pi, pi/300)
+r = 1 - 2*cos(dimension)
+r2 =  4-3*sin(dimension)
+
+interseccion = function(r1, r2, theta){
+  
+}
 
 Polar = function(theta, r, color){
   x = 0
@@ -272,6 +327,7 @@ Polar = function(theta, r, color){
   plot(c(-max(r), max(r)), c(-max(r), max(r)), xlab = "Radio", ylab = "Radio")
   
   aux = max(r)
+
   
   while (aux > 0) {
     f_i = aux * sin(angulo)
@@ -281,23 +337,21 @@ Polar = function(theta, r, color){
     text(axisX + 0.2, -0.2, axisX, col="blue")
     axisX = axisX + 1
     aux = aux - 1
+
   }
-  
   abline(v=((max(circun) + min(circun)) / 2), col="blue")
   abline(h=((max(circun) + min(circun)) / 2), col="blue")
   #Graficar las rectas que atraviesan
   segments(-max(r) + 0.5, -max(r) + 0.5, max(r) - 0.5, max(r) - 0.5, col="blue")
   segments(-max(r) + 0.5, max(r) - 0.5, max(r) - 0.5, max(r) + 0.5, col="blue")
-  
   points(x, y, pch = 20, col = color, cex = 1)
 }
-dimension = seq(-pi, pi, pi/300)
-r = 1 - 2*cos(dimension)
+
 Polar(dimension, r, "green")
-par(new=TRUE)
-r2 = 2 - exp(dimension)
+par(new=T)
 Polar(dimension, r2, "orange")
 
 
 ```
+
 
