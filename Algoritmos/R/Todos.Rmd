@@ -270,7 +270,6 @@ Polar = function(theta, r, color){
   x = r * cos(theta)
   y = r * sin(theta)
   plot(c(-max(r), max(r)), c(-max(r), max(r)), xlab = "Posición en 'x'", ylab = "Posición en 'y'")
-  plot()
   
   aux = max(r)
   
