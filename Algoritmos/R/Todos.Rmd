@@ -324,8 +324,7 @@ Polar = function(theta, r, color){
   angulo = seq(-max(theta), max(theta), theta[2] - theta[1])
   x = r * cos(theta)
   y = r * sin(theta)
-  plot(c(-max(r), max(r)), c(-max(r), max(r)), xlab = "Radio", ylab = "Radio")
-  
+  plot(c(-8, 8), c(-8, 8), xlab = "Radio", ylab = "Radio")
   aux = max(r)
 
   
@@ -339,8 +338,8 @@ Polar = function(theta, r, color){
     aux = aux - 1
 
   }
-  abline(v=((max(circun) + min(circun)) / 2), col="blue")
-  abline(h=((max(circun) + min(circun)) / 2), col="blue")
+  abline(v=((max(circun) + min(circun)) / 2), col="red")
+  abline(h=((max(circun) + min(circun)) / 2), col="red")
   #Graficar las rectas que atraviesan
   segments(-max(r) + 0.5, -max(r) + 0.5, max(r) - 0.5, max(r) - 0.5, col="blue")
   segments(-max(r) + 0.5, max(r) - 0.5, max(r) - 0.5, max(r) + 0.5, col="blue")
@@ -350,6 +349,11 @@ Polar = function(theta, r, color){
 Polar(dimension, r, "green")
 par(new=T)
 Polar(dimension, r2, "orange")
+
+abline(lm(r2~r), col="black")
+xy = lm(r2~r)
+print(xy)
+
 
 
 ```
