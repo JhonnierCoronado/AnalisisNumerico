@@ -17,9 +17,16 @@ setwd("C:/Users/auditorio/Documents/analisis_numerico/parciales/parcial1")
 a. Revise las siguientes funciones con la matriz del ejercicio 2
 b. Evalue la matriz de transición para el método $\textbf{SOR}$
 ```{r,echo=T}
+n = 4
 D1<-eye(n, m = n)
 D2<-ones(n, m = n)
 D3<-zeros(n, m = n)
+
+print(D1)
+print(D2)
+print(D3)
+
+
 ```
 2. Dada la siguiente matriz, utilice las funciones del paquete para descomponer la matriz $A=L+D+U$ (Jacobi)
 ```{r, echo=FALSE}
@@ -27,9 +34,70 @@ A = matrix(c(-8.1, -7, 6.123, -2, -1, 4,
 -3, -1, 0, -1, -5, 0.6,
 -1, 0.33, 6, 1/2), nrow=4, byrow=TRUE)
 A
+n = 4
+A = matrix(c(-8.1, -7, 6.123, -2, -1, 4,
+-3, -1, 0, -1, -5, 0.6,
+-1, 0.33, 6, 1/2), nrow=n, byrow=TRUE)
+print("A")
+print(A)
+
+diagonal = function(M){
+  M[col(M)!=row(M)]= 0
+  return(M)
+}
+#T= = -D^-1(L + U)
+D = diagonal(A)
+#Matriz triangular inferior
+L = tril(A, k = -1, diag = FALSE)
+#Matriz triangular superior
+U = triu(A, k=1, diag = FALSE)
+
+T = (-solve(D))%*%(L+U)
+print("T")
+print(T)
+print("Norma de la Matriz")
+#Imprime la norma Frobenius
+print(norm(T, "F"))
 ```
 b. Utilice la función itersolve(A, b, tol , method = "Gauss-Seidel") y solucionar el sistema asociado a la matriz $A$ con $b=[1.45,3,5.12,-4]^{t}$ con una tolerancia de $1e^-9$
+
+```{r}
+
+B = matrix(c(1.45,3,5.12,-4), nrow=n, byrow=TRUE)
+print("B")
+print(B)
+
+solucion = itersolve(A, B, x0=c(1,2,1,1), tol=1e-9 , method = "Gauss-Seidel")
+print(solucion)
+```
+
+
 c. Genere 5 iteraciones del método de Jacobi, calcular error relativo para cada iteracion
+
+```{r}
+MetodoJacobi = function(A, b, x0, tol){
+  xk = matrix(x0)
+  
+  contador = 0
+  
+  repeat{
+    i = matrix(b - ((L+U)%*%xk))
+    D1 = solve(D)
+    xk1 = D1%*%i
+    cat("Error ", contador, " ", norm(xk1-xk,"F") / norm(xk), "\n")
+    xk = xk1
+    contador = contador + 1
+    if (contador == tol){
+      break
+    }
+  }
+  cat("Solucion con 5 iteraciones: ", xk, "\n")
+}
+x0 = c(1,2,1,1)
+MetodoJacobi(A, B, x0, 5)
+
+```
+
 
 3. Sea el sistema $AX=b$ 
  a. Implemente una función en R para que evalue las raíces del polinomio característico asociado a la matriz $A$
@@ -53,18 +121,88 @@ solucion<- solve(A,b)
 3. 
 a. Pruebe el siguiente algoritmo con una matriz $A_{3}$, modifiquelo para quue $a_{ii}=0$ para todo $i$
 ```{r, echo=T}
-tril1 <- function(M, k = 0) {
-if (k == 0) {
-M[upper.tri(M, diag = FALSE)] <- 0
-} else {
-M[col(M) >= row(M) + k + 1] <- 0
+trilManual = function(M, k = 0){
+  if (k == 0){
+    M[upper.tri(M, diag = TRUE)] = 0
+  } else {
+    M[col(M) >= row(M) + k + 1] = 0
+    M[col(M)==row(M)] = 0
+  }
+  return(M)
 }
-return(M)
-}
+
+M = matrix(c(2,3,4,1,2,3,5,6,7), nrow = 3)
+print("M: ") 
+print(M)
+print("Tril M: ") 
+print(trilManual(M, k = 1))
 ```
 b. Implemente una función en R para que dada una matriz $A$ se obtenga una matriz diagonal $D$ donde en la diagonal estan los mismo elementos de A
 
+```{r}
+M = matrix(c(2,3,4,1,2,3,5,6,7), nrow = 3)
+print("M: ")
+print(M)
+
+MatrizDiagonal = function(M){
+  M[col(M)!=row(M)] = 0
+  return(M)
+}
+
+print("Diagonal M: ")
+print(MatrizDiagonal(M))
+
+```
+
+
 4. Cree una función que cuente el número de multiplicaciones en el método directo de Gauss Jordan, para resolver un sistema de $n$ ecuaciones y pruebelo para $n=5$
+
+```{r}
+#Suponemos que el determinante de A != 0
+numeroMultiplicaciones = function(A, b){
+  multiplicacion = 0
+  n = nrow(A)
+  
+  Ab = cbind(A, b)
+  print(Ab)
+  
+  for (i in 1:(n-1)) {
+    if (Ab[i, i] == 0){
+      f = which(Ab[i, ] != 0)[1]
+      Ab[c(i, f), ] = Ab[c(f, i), ]
+    }
+    for (k in (i+1): n){
+      Ab[k, ] = Ab[k, ] - Ab[k, i] / Ab[i, i]*Ab[i, ]
+      multiplicacion = multiplicacion + 2*(ncol(Ab))
+    }
+  }
+  
+  x = rep(NA, times = n)
+  x[n] = Ab[n, n+1] / Ab[n, n]
+  multiplicacion = multiplicacion + n + 1
+  
+  for (i in (n-1):1){
+    x[i] = (Ab[i, n+1] - sum(Ab[i, (i+1):n] * x[(i+1):n])) / Ab[i, i]
+    multiplicacion = multiplicacion + 2*(n-2)
+  }
+  cat("Numero de multiplicaciones: ", multiplicacion, "\n")
+  return(x)
+  
+}
+
+A = matrix(c( 0, 2, 3, 3, 3,
+              -5, -4, 1, 4, 5,
+              0, 0, 0, 3, 7,
+              -4, -7, -8, 9,7,
+              3, 4, 5, 5, 6), nrow=5, byrow=TRUE)
+
+b = matrix(c(1,0,0,0,1), nrow=5, byrow=TRUE)
+
+print(numeroMultiplicaciones(A, b))
+
+```
+
+
 
 5. Dado el siguiente sistema:
 
@@ -76,26 +214,167 @@ a. Encuentre el valor de $\alpha$ y $\beta$ para asegura la convergencia por el 
 b. Genere una tabla que tenga 10 iteraciones del método de Jacobi con vector inicial $x_{0}=[1,2,3]^t$
 c. Grafique cada ecuación y la soñlución
 
+```{r}
+#alpha > 1 + 1
+# 2 > beta + 1
+library(plot3D)
+
+
+beta = 0
+alpha = 3
+
+A = matrix(c(2, 0, 1,
+             beta,2 , -1,
+             -1, 1, alpha), nrow=3, byrow=TRUE)
+
+B = matrix (c(1,2,1),nrow=3, byrow=TRUE)
+
+Ab = cbind(A,B)
+print(Ab)
+
+
+#Punto b
+x = 0
+y = 0
+z = 0
+
+diagonal = function(M){
+  M[col(M)!=row(M)]= 0
+  return(M)
+}
+
+MetodoJacobi3D = function(A, b, x0, tol){
+   xk = matrix(x0)
+  
+  D = diagonal(A)
+  L = tril(A, k=-1, diag = FALSE)
+  U = triu(A, k=1, diag = FALSE)
+  
+  contador = 1
+  repeat
+  {
+    i = matrix(b-((L+U)%*%xk))
+    D1 = (solve(D))
+    xk1 = D1%*%i
+    cat("Error ",contador," ",norm(xk1-xk,"F")/norm(xk),"\n")
+    xk = xk1
+    
+    x[[contador]] = xk[1]
+    y[[contador]] = xk[2]
+    z[[contador]] = xk[3]
+    cat("Solucion iteracion ", contador,": ",x[[contador]]," ",y[[contador]]," ",z[[contador]],"\n")
+    contador = contador + 1
+    
+    if(contador == tol)
+      break
+  }
+  #Punto c
+  lines3D(x, y, z, colvar = z, col = NULL, add = FALSE, theta = 20, phi = 20)
+  cat("Solucion: ", xk, ", con ", tol ," iteraciones: ","\n")
+}
+
+x1 = c(1,2,3)
+MetodoJacobi3D(A, B, x1, 10)
+
+
+
+```
+
+
 6. Instalar el paquete Matrix y descomponga la matriz $A$ (del punto dos) de la forma $LU$ y la factorizarla como $A=QR$
+
+```{r}
+n = 4
+A = matrix(c(-8.1, -7, 6.123, -2, -1, 4,
+-3, -1, 0, -1, -5, 0.6,
+-1, 0.33, 6, 1/2), nrow=n, byrow=TRUE)
+b = matrix(c(1.45,3,5.12,-4), nrow=n, byrow=TRUE)
+
+print("A: ")
+print(A)
+Ab = cbind(A, b)
+
+#Diagonales
+
+L = tril(A, k = -1, diag = FALSE)
+U = tril(A, k = 1, diag = FALSE)
+
+#QR
+gs = gramSchmidt(A)
+(Q = gs$Q); (R = gs$R)
+
+print("Q*R =  A")
+print(Q%*%R) # = A
+```
+
 
 7.
 a. Determinar numéricamente la intersección entre la circunferencia $x^2 + y^2 = 1$ y la recta $y = x$. Usamos una aproximación inicial $(1,1)$. Utilice el pauqte BB y  la función BBsolve() del paquete,grafique la solución
+```{r}
+
+library(BB)
+ecuacion = function(x){
+  n = length(x)
+  F = rep(NA, n)
+  F[1] = x[1] - x[2]
+  F[2] = x[1]^2 + x[2]^2 - 1
+  F
+}
+
+aproximacion = c(1,1)
+sol = BBsolve(par = aproximacion, fn = ecuacion)
+sol$par
+plot(sol$par)
+plot(ecuacion)
+
+```
+
 b Analizar y comentar el siguinte código
 ```{r, echo=T}
 trigexp = function(x) {
-n = length(x)
-F = rep(NA, n)
-F[1] = 3*x[1]^2 + 2*x[2] - 5 + sin(x[1] - x[2]) * sin(x[1] + x[2])
-tn1 = 2:(n-1)
-F[tn1] = -x[tn1-1] * exp(x[tn1-1] - x[tn1]) + x[tn1] *
-( 4 + 3*x[tn1]^2) + 2 * x[tn1 + 1] + sin(x[tn1] -
-x[tn1 + 1]) * sin(x[tn1] + x[tn1 + 1]) - 8
-F[n] = -x[n-1] * exp(x[n-1] - x[n]) + 4*x[n] - 3
-F
+  #Se saca la longitud del vector que llega
+  n = length(x)
+  
+  #Con la longitud, se crea un vector F vacio
+  F = rep(NA, n)
+  
+  #Se colocan las ecuaciones que se trabajaran
+  F[1] = 3*x[1]^2 + 2*x[2] - 5 + sin(x[1] - x[2]) * sin(x[1] + x[2])
+  
+  #Se crea una secuencia de números desde 2 hasta n-1
+  tn1 = 2:(n-1)
+  
+  #Esta secuencia es evaluada en la ecuación/es
+  F[tn1] = -x[tn1-1] * exp(x[tn1-1] - x[tn1]) + x[tn1] *
+  ( 4 + 3*x[tn1]^2) + 2 * x[tn1 + 1] + sin(x[tn1] -
+  x[tn1 + 1]) * sin(x[tn1] + x[tn1 + 1]) - 8
+  
+  #Se evalúa la última ecuación en n
+  F[n] = -x[n-1] * exp(x[n-1] - x[n]) + 4*x[n] - 3
+  
+  #Se retorna F
+  F
 }
+
 n = 10000
+
+#Se generan 'n' (en este caso 10000) números aleatorios entre 0 y 1
 p0 = runif(n) # n initial random starting guesses
+
+#Con BBsolve, se halla la solución del sistema trigexp
 sol = BBsolve(par=p0, fn=trigexp)
+
+#Muestra la solución para cada valor
 sol$par
 ```
 8. Demuestre y realice varias pruebas que la matriz de transición por el método de Gauss-Seidel esta dada por $T=(-D^{-1}U)(I+LD^{-1})^{-1}$
+
+```{r}
+N = 3
+A = Diag(rep(3,N)) + Diag(rep(-2, N-1), k=-1) + Diag(rep(-1, N-1), k=1)
+x0 = rep(0, N)
+b = c(4,5,6)
+
+itersolve(A, b, tol = 1e-9 , method = "Gauss-Seidel")
+```
+
