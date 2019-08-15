@@ -41,7 +41,7 @@ diagonal = function(M){
   return(M)
 }
 
-#T= = -D^-1(L + U)
+#T = -D^-1(L + U)
 D = diagonal(A1)
 #Matriz triangular inferior
 L = Matrix::tril(A1, k = -1, diag = FALSE)
@@ -60,5 +60,6 @@ print("Norma de T")
 print(norm(T, "F"))
 
 print(5/3)
-
-cat("Error: ", abs(norm(T, "F") - 5/3), "\n")
+error = abs(norm(T, "F") - 5/3)
+cat("Error: ", error, "\n")
+cat("Porcentaje de error ", error / 5/3  * 100) 
