@@ -1,5 +1,6 @@
 library(pracma)
 library(MASS)
+library(Matrix)
 n = 5
 
 a = zeros(n, m = n)
@@ -60,3 +61,4 @@ print(norm(T, "F"))
 
 print(5/3)
 
+cat("Error: ", abs(norm(T, "F") - 5/3), "\n")
