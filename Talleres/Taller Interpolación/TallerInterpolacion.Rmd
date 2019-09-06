@@ -1,0 +1,169 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+1.
+Sean x1, . . ., xn algunos números diferentes por pares y sean y1, . . ., yn algunos números.
+Entonces existe un único polinomio P de grado ≤ n − 1 tal que:
+𝑃(𝑥𝑗) = 𝑦𝑗 𝑝𝑎𝑟𝑎 𝑐𝑎𝑑𝑎 𝑗 𝑒𝑛 {1, . . . , 𝑛}.
+Demostración:
+Denotemos por c0, . . ., cn−1 a los coeficientes del polinomio:
+𝑃(𝑥) = 𝑐0 + 𝑐1𝑥 + 𝑐2𝑥0
+2 + . . . + 𝑐𝑛 − 1𝑥 𝑛 − 1 .
+Sustituyendo x = x1, luego x = x2, etc., hasta x = xn, obtenemos el siguiente sistema de ecuaciones
+lineales para las incógnitas
+𝑐0 + 𝑥1𝑐1 + 𝑥 2 1 𝑐2 + . . . + 𝑥 𝑛 − 1 1 𝑐𝑛 − 1 = 𝑦1
+𝑐0 + 𝑥𝑛𝑐1 + 𝑥 2 𝑛 𝑐2 + . . . + 𝑥 𝑛 − 1 𝑛 𝑐𝑛 − 1 = 𝑦𝑛.
+La matriz de este sistema es la matriz de Vandermonde asociada a los puntos x1, . . ., xn, y el
+sistema se escribe brevemente en la forma
+𝑉 (𝑥1, . . . , 𝑥𝑛)𝑐 = 𝑦,
+donde c = ck−1 n k=1 es el vector de los coeficientes incognitos.
+El determinante de este sistema es el determinante de Vandermonde y se calcula como el
+producto de todas las diferencias xj − xi con i < j:
+𝑑𝑒𝑡 𝑉(𝑥1, . . . , 𝑥𝑛) = ∏ (xk − xj).
+j,k∈{1,...,n} j<k
+Como los puntos x1, . . ., xn son diferentes por pares, todas estas diferencias xk − xj son distintas
+de cero, y el determinante es distinto de cero. Por lo tanto, el sistema de ecuaciones lineales tiene
+una solución única, esto es, existe un único polinomio que cumple con dichas propiedades.
+
+
+6. Sea f(x) = tanx utilice la partición de la forma xi = δk para implementar una interpolación para n = 10 puntos y encuentre el valor δ que minimice el error
+
+```{r}
+require(PolynomF)
+require(pracma)
+
+
+ft <- function(x)
+{
+  y0 = c()
+  it = 1
+  while (it <= length(x))
+  {
+    y0[it] = tan(x[it])
+    it = it + 1
+  }
+  return(y0)
+}
+
+x = seq(-pi/2, pi/2, length=10)
+y = ft(x)
+
+#Lagrange
+polyAjuste = poly_calc(x,y)
+print(polyAjuste)
+
+y2 = c()
+it = 1
+
+while (it <= length(x)){
+  y2[it] = polyAjuste(x[it])
+  it = it +1
+}
+
+x_tan = seq(-pi/2,pi/2,length=100)
+y_tan = tan(x_tan)
+
+plot(x_tan,y_tan,type="l",xlim=c(-2,2),ylim=c(-10,10), xlab = "x", ylab = "y")
+par(new=TRUE)
+
+errores = c()
+it2 = 1
+while (it2 <= length(y)){
+  errores[it2] = abs(abs(y2[it2]-y[it2])/y[it2]) *100
+  it2 = it2 +1
+}
+plot(x[2:9],y[2:9], pch = 19, cex=1.5, col= "blue",xlim=c(-2,2),ylim=c(-10,10), xlab = "x", ylab = "y")
+par(new=TRUE)
+curve(polyAjuste,add=T,lty=3, lwd=2,xlim=c(-2,2),ylim=c(-10,10), xlab = "x", ylab = "y")
+par(new=TRUE)
+plot(x[2:9],y2[2:9], pch = 19, cex=1, col= "red",xlim=c(-2,2),ylim=c(-10,10), xlab = "x", ylab = "y")
+```
+
+
+
+
+
+7. Sea f(x) = e^x en el intervalo de [0,1] utilice el método de lagrange y determine el tamaño del paso que me produzca un error por debajo de 10^-5. Es posible utilizar el polinomio de Taylor para interpolar en este caso? Verifique su respuesta
+```{r}
+x<-c(exp(0.1),exp(0.2),exp(0.3),exp(0.4),exp(0.5),exp(0.6),exp(0.7),exp(0.8),exp(0.9),exp(0.25),exp(0.35),exp(0.45),exp(0.55),exp(0.65),exp(0.75),exp(0.85))
+y<-c(1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.15,1.25,1.35,1.45,1.55,1.65,1.75)
+plot(y,x, pch=19, cex=1, col = "red", asp=1) 
+
+
+fx = function(fun, a,b, n) {
+  if (n%%2 != 0) 
+    stop("En la regla de Simpson, n es par!")
+  h = (b-a)/n
+  i1 = seq(1, n-1, by = 2)
+  i2 = seq(2, n-2, by = 2) 
+  y = fun(a+(0:n)*h) 
+  h/3 * ( fun(a) + fun(b) + 4*sum(y[i1]) + 2*sum(sum(y[i2]) ) )
+}
+f = function(x) exp(x)
+fx(f, 0, 1, 1000)
+```
+8. Considere el comportamiento de gases no ideales se describe a menudo con la ecuacíon viria lde estado. los siguientes datos para el nitrogeno N2
+
+```{r}
+library(PolynomF)
+library(rSymPy)
+lagrange.poly <- function(x, y) {
+ 
+  l <- list() # List to store Lagrangian polynomials L_{1,2,3,4}
+  k <- 1
+   
+  for (i in x) {
+    # Set the numerator and denominator of the Lagrangian polynomials to 1 and build them up
+    num <- 1
+    denom <- 1
+ 
+    # Remove the current x value from the iterated list
+    p <- x[! x %in% i]
+ 
+    # For the remaining points, construct the Lagrangian polynomial by successively 
+    # appending each x value
+    for (j in p) {
+      num <- paste(num, "*", "(", 'x', " - ", as.character(j), ")", sep = "", collapse = "")
+      denom <- paste(denom, "*", "(", as.character(i)," - ", as.character(j), ")", sep = "", collapse = "")
+    }
+   
+    # Set each Lagrangian polynomial in rSymPy to simplify later.
+    l[k] <- paste("(", num, ")", "/", "(", denom, ")", sep = "", collapse = "")
+    k <- k + 1
+  }
+   
+  # Similar to before, we construct the final Lagrangian polynomial by successively building 
+  # up the equation by iterating through the polynomials L_{1,2,3,4} and the y values 
+  # corresponding to the x values.
+  eq <- 0
+   
+  for (i in 1:length(y)) {
+    eq <- paste(eq, '+', as.character(y[i]), "*", l[[i]], sep = "", collapse = "")
+  }
+   
+  # Define x variable for rSymPy to simplify
+  x <- Var('x')
+   
+  # Simplify the result with rSymPy and return the polynomial
+  return(sympy(paste("simplify(", eq, ")")))
+}
+
+x<-c(100,200,300,400,500,600)
+y<-c(-160,-35,-4.2,9,16.9,21.3)
+plot(x,y, pch=19, cex=1, col = "red", asp=1,xlab="X", ylab="Y", main="Diagrama")
+re = lagrange.poly(x,y)
+Ajuste_Polinomio = poly_calc(x,y)
+curve(Ajuste_Polinomio,add=T, from = 0, to = 100)
+f <- as.function(alist(x=, eval(parse(text=re))))
+curve(f,add=T,from = 100, to = 700,col="Blue")
+cat("Ajuste polinomico: en negro. Lagrange: Azul \n")
+cat("Con Lagrange: \nEl polinomio interpolante es: ",re,"\n")
+cat("Cuando T=450K, B tiene un valor de: ",f(450),"\n")
+cat("Con ajuste Polinomico: \nEl polinomio interpolante es: ",as.character(Ajuste_Polinomio),"\n")
+cat("Cuando T=450K, B tiene un valor de: ",Ajuste_Polinomio(450),"\n")
+
+
+```
+
+
